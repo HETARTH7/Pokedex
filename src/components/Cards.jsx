@@ -1,6 +1,6 @@
-// Cards.jsx
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const Cards = (props) => {
   const url = props.data.url;
@@ -17,7 +17,7 @@ const Cards = (props) => {
   return (
     <div className="bg-white p-4 rounded shadow-md">
       {pokemon ? (
-        <div>
+        <Link to={`/${pokemon.id}`}>
           {pokemon.id ? (
             <img
               src={`https://unpkg.com/pokeapi-sprites@2.0.2/sprites/pokemon/other/dream-world/${pokemon.id}.svg`}
@@ -36,7 +36,7 @@ const Cards = (props) => {
               ))}
             </div>
           ) : null}
-        </div>
+        </Link>
       ) : null}
     </div>
   );

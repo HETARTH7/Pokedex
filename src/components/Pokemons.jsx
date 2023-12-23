@@ -89,20 +89,30 @@ const Pokemons = () => {
               return (
                 <div key={index}>
                   {pokemon ? (
-                    <div key={index}>
+                    <div>
                       {pokemon.id ? (
                         <img
                           src={`https://unpkg.com/pokeapi-sprites@2.0.2/sprites/pokemon/other/dream-world/${pokemon.id}.svg`}
                           alt=""
+                          className="mx-auto"
                         />
                       ) : null}
-                      <p>{pokemon.id}</p>
-                      <p>{pokemon.name}</p>
-                      {pokemon.types
-                        ? pokemon.types.map((type, index) => {
-                            return <p key={index}>{type.type.name}</p>;
-                          })
-                        : null}
+                      <p className="text-center text-lg font-bold">
+                        {pokemon.id}
+                      </p>
+                      <p className="text-center">{pokemon.name}</p>
+                      {pokemon.types ? (
+                        <div className="flex justify-center">
+                          {pokemon.types.map((type, index) => (
+                            <p
+                              key={index}
+                              className="mr-2 p-2 bg-gray-200 rounded"
+                            >
+                              {type.type.name}
+                            </p>
+                          ))}
+                        </div>
+                      ) : null}
                     </div>
                   ) : null}
                 </div>
