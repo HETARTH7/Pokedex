@@ -9,6 +9,8 @@ const Pokemons = () => {
   const [offset, setOffset] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [search, setSearch] = useState(false);
+  const [filters, setFilters] = useState([]);
+  const [selectedTypeFilter, setSelectedTypeFilter] = useState("");
 
   const infiniteScroll = (data) => {
     const target = data[0];
@@ -19,10 +21,6 @@ const Pokemons = () => {
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    if (searchTerm.trim() === "") {
-      return;
-    }
-
     try {
       const response = await axios.get(
         `https://pokeapi.co/api/v2/pokemon/${searchTerm.toLowerCase()}`
@@ -36,23 +34,19 @@ const Pokemons = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchPokemons = async () => {
-      try {
-        const response = await axios.get(
-          `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=20`
-        );
-        const newPokemons = response.data.results;
-        setPokemons((prevPokemons) => [...prevPokemons, ...newPokemons]);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching Pokemon data:", error);
-      }
-    };
-    if (!search) fetchPokemons();
-  }, [offset, search]);
+  const handleTypeFilterChange = (e) => {
+    setSelectedTypeFilter(e.target.value);
+    setOffset(0);
+  };
 
   useEffect(() => {
+    const fetchTypes = async () => {
+      const response = await axios.get("https://pokeapi.co/api/v2/type");
+      const json = response.data;
+      setFilters(json.results);
+    };
+    fetchTypes();
+
     const observer = new IntersectionObserver(infiniteScroll, {
       root: null,
       rootMargin: "0px",
@@ -67,20 +61,60 @@ const Pokemons = () => {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    const fetchPokemons = async () => {
+      try {
+        let url;
+        if (selectedTypeFilter) {
+          url = `${selectedTypeFilter}`;
+        } else {
+          url = `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=20`;
+        }
+
+        const response = await axios.get(url);
+        const newPokemons = selectedTypeFilter
+          ? response.data.pokemon
+          : response.data.results;
+        setPokemons((prevPokemons) =>
+          offset === 0 ? newPokemons : [...prevPokemons, ...newPokemons]
+        );
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching Pokemon data:", error);
+      }
+    };
+    fetchPokemons();
+  }, [offset, selectedTypeFilter]);
+
   return (
     <div>
       <div className="flex flex-col items-center">
-        <form onSubmit={handleSearch} className="text-center">
-          <input
-            type="text"
-            placeholder="Search by ID or Name"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded mb-2"
-          />
+        <form onSubmit={handleSearch} className="text-center mt-2">
+          <div className="w-full">
+            <input
+              type="text"
+              placeholder="Search by ID or Name"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="border border-gray-300 rounded p-2 mb-2"
+            />
+            <select
+              value={selectedTypeFilter}
+              onChange={handleTypeFilterChange}
+              className="border border-gray-300 rounded p-2 mb-2"
+            >
+              <option value="">Filter by Type</option>
+              {filters.map((filter, index) => (
+                <option key={index} value={filter.url}>
+                  {filter.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <button
             type="submit"
-            className="w-full p-2 bg-blue-500 text-white rounded"
+            className="w-full p-2 bg-blue-500 text-white rounded mb-2"
           >
             Search
           </button>
@@ -92,39 +126,30 @@ const Pokemons = () => {
           ? pokemons.map((pokemon, index) => (
               <Cards key={index} data={pokemon} />
             ))
-          : pokemons.map((pokemon, index) => {
-              return (
-                <Link key={index} to={`/${pokemon.id}`}>
-                  {pokemon ? (
-                    <div>
-                      {pokemon.id ? (
-                        <img
-                          src={`https://unpkg.com/pokeapi-sprites@2.0.2/sprites/pokemon/other/dream-world/${pokemon.id}.svg`}
-                          alt=""
-                          className="mx-auto"
-                        />
-                      ) : null}
-                      <p className="text-center text-lg font-bold">
-                        {pokemon.id}
-                      </p>
-                      <p className="text-center">{pokemon.name}</p>
-                      {pokemon.types ? (
-                        <div className="flex justify-center">
-                          {pokemon.types.map((type, index) => (
-                            <p
-                              key={index}
-                              className="mr-2 p-2 bg-gray-200 rounded"
-                            >
-                              {type.type.name}
-                            </p>
-                          ))}
-                        </div>
-                      ) : null}
+          : pokemons.map((pokemon, index) => (
+              <Link key={index} to={`/${pokemon.id}`}>
+                <div>
+                  {pokemon.id ? (
+                    <img
+                      src={`https://unpkg.com/pokeapi-sprites@2.0.2/sprites/pokemon/other/dream-world/${pokemon.id}.svg`}
+                      alt=""
+                      className="mx-auto"
+                    />
+                  ) : null}
+                  <p className="text-center text-lg font-bold">{pokemon.id}</p>
+                  <p className="text-center">{pokemon.name}</p>
+                  {pokemon.types ? (
+                    <div className="flex justify-center">
+                      {pokemon.types.map((type, index) => (
+                        <p key={index} className="mr-2 p-2 bg-gray-200 rounded">
+                          {type.type.name}
+                        </p>
+                      ))}
                     </div>
                   ) : null}
-                </Link>
-              );
-            })}
+                </div>
+              </Link>
+            ))}
       </ul>
       {loading && <p>Loading...</p>}
       <div id="intersectionTarget" style={{ height: "10px" }}></div>
