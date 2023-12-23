@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Cards from "./Cards";
 
 const Pokemons = () => {
   const [pokemons, setPokemons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [offset, setOffset] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
+  const [search, setSearch] = useState(false);
 
   const infiniteScroll = (data) => {
     const target = data[0];
@@ -14,7 +16,8 @@ const Pokemons = () => {
     }
   };
 
-  const handleSearch = async () => {
+  const handleSearch = async (e) => {
+    e.preventDefault();
     if (searchTerm.trim() === "") {
       return;
     }
@@ -25,6 +28,7 @@ const Pokemons = () => {
       );
       const foundPokemon = response.data;
       setPokemons([foundPokemon]);
+      setSearch(true);
     } catch (error) {
       alert("Pokemon not found. Try again");
       setPokemons([]);
@@ -44,8 +48,8 @@ const Pokemons = () => {
         console.error("Error fetching Pokemon data:", error);
       }
     };
-    fetchPokemons();
-  }, [offset]);
+    if (!search) fetchPokemons();
+  }, [offset, search]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(infiniteScroll, {
@@ -65,18 +69,45 @@ const Pokemons = () => {
   return (
     <div>
       <div>
-        <input
-          type="text"
-          placeholder="Search by ID or Name"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <button onClick={handleSearch}>Search</button>
+        <form onSubmit={handleSearch} className="flex items-center">
+          <input
+            type="text"
+            placeholder="Search by ID or Name"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="mr-2 p-2 border border-gray-300 rounded"
+          />
+          <input type="submit" className="p-2 bg-blue-500 text-white rounded" />
+        </form>
       </div>
-      <ul>
-        {pokemons.map((pokemon, index) => (
-          <li key={index}>{pokemon.name}</li>
-        ))}
+      <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {!search
+          ? pokemons.map((pokemon, index) => (
+              <Cards key={index} data={pokemon} />
+            ))
+          : pokemons.map((pokemon, index) => {
+              return (
+                <div key={index}>
+                  {pokemon ? (
+                    <div key={index}>
+                      {pokemon.id ? (
+                        <img
+                          src={`https://unpkg.com/pokeapi-sprites@2.0.2/sprites/pokemon/other/dream-world/${pokemon.id}.svg`}
+                          alt=""
+                        />
+                      ) : null}
+                      <p>{pokemon.id}</p>
+                      <p>{pokemon.name}</p>
+                      {pokemon.types
+                        ? pokemon.types.map((type, index) => {
+                            return <p key={index}>{type.type.name}</p>;
+                          })
+                        : null}
+                    </div>
+                  ) : null}
+                </div>
+              );
+            })}
       </ul>
       {loading && <p>Loading...</p>}
       <div id="intersectionTarget" style={{ height: "10px" }}></div>
