@@ -29,7 +29,7 @@ const Pokemon = () => {
           <img
             src={`https://unpkg.com/pokeapi-sprites@2.0.2/sprites/pokemon/other/dream-world/${id}.svg`}
             alt=""
-            className="mx-auto md:mr-8 mb-4 md:mb-0 w-48 md:w-auto"
+            className="mx-auto mb-4 md:mb-0 w-full md:w-1/2"
           />
           <div className="flex-grow text-center md:text-left">
             <p className="text-2xl font-bold mb-2">
@@ -39,13 +39,19 @@ const Pokemon = () => {
               ? pokemon.stats.map((stat, index) => (
                   <div key={index} className="flex items-center mb-2">
                     <p className="w-1/3">{stat.stat.name}:</p>
-                    <div className="w-2/3 bg-gray-200 rounded overflow-hidden">
-                      <div
-                        className={`bg-blue-500 h-4 text-xs leading-none py-1 text-center text-white w-[${stat.base_stat}px]`}
-                      >
-                        {stat.base_stat}
-                      </div>
+                    <div className="h-4 text-xs leading-none py-1 text-center w-1/6">
+                      {stat.base_stat}
                     </div>
+                    <div
+                      className="w-2/3 bg-gray-200 rounded overflow-hidden ml-3 max-[500px]:w-36"
+                      style={{
+                        // width: "100px",
+                        height: "20px",
+                        background: `linear-gradient(90deg, #3182ce ${
+                          (stat.base_stat / 150) * 100
+                        }%, #edf2f7 ${(stat.base_stat / 150) * 100}%)`,
+                      }}
+                    ></div>
                   </div>
                 ))
               : null}

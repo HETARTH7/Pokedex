@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Cards from "./Cards";
+import { Link } from "react-router-dom";
 
 const Pokemons = () => {
   const [pokemons, setPokemons] = useState([]);
@@ -68,18 +69,24 @@ const Pokemons = () => {
 
   return (
     <div>
-      <div>
-        <form onSubmit={handleSearch} className="flex items-center">
+      <div className="flex flex-col items-center">
+        <form onSubmit={handleSearch} className="text-center">
           <input
             type="text"
             placeholder="Search by ID or Name"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="mr-2 p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded mb-2"
           />
-          <input type="submit" className="p-2 bg-blue-500 text-white rounded" />
+          <button
+            type="submit"
+            className="w-full p-2 bg-blue-500 text-white rounded"
+          >
+            Search
+          </button>
         </form>
       </div>
+
       <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {!search
           ? pokemons.map((pokemon, index) => (
@@ -87,7 +94,7 @@ const Pokemons = () => {
             ))
           : pokemons.map((pokemon, index) => {
               return (
-                <div key={index}>
+                <Link key={index} to={`/${pokemon.id}`}>
                   {pokemon ? (
                     <div>
                       {pokemon.id ? (
@@ -115,7 +122,7 @@ const Pokemons = () => {
                       ) : null}
                     </div>
                   ) : null}
-                </div>
+                </Link>
               );
             })}
       </ul>
