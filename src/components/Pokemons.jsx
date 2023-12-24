@@ -106,7 +106,7 @@ const Pokemons = () => {
         );
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching Pokemon data:", error);
+        alert("Error fetching Pokemon data:", error);
       }
     };
     if (!search) fetchPokemons();
