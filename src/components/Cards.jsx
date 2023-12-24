@@ -47,7 +47,7 @@ const Cards = (props) => {
       to={`/${pokemon.id}`}
       className={`p-4 rounded shadow-md ${
         pokemon.types ? typeColors[pokemon.types[0].type.name][0] : ""
-      } h-full grid grid-cols-2 hover:scale-105 hover:shadow-lg`}
+      } m-2 h-full grid grid-cols-2 hover:scale-105 hover:shadow-lg`}
     >
       {pokemon ? (
         <>
