@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Cards from "./Cards";
 import { Link } from "react-router-dom";
+import typeColors from "../color.json";
 
 const Pokemons = () => {
   const [pokemons, setPokemons] = useState([]);
@@ -83,8 +84,12 @@ const Pokemons = () => {
         console.error("Error fetching Pokemon data:", error);
       }
     };
-    fetchPokemons();
-  }, [offset, selectedTypeFilter]);
+    if (!search) fetchPokemons();
+  }, [offset, search, selectedTypeFilter]);
+
+  const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
 
   return (
     <div>
@@ -96,14 +101,16 @@ const Pokemons = () => {
               placeholder="Search by ID or Name"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="border border-gray-300 rounded p-2 mb-2"
+              className="border border-gray-300 rounded-full p-2 mb-2 hover:scale-105 hover:shadow-lg"
             />
             <select
               value={selectedTypeFilter}
               onChange={handleTypeFilterChange}
-              className="border border-gray-300 rounded p-2 mb-2"
+              className="p-2 mb-2"
             >
-              <option value="">Filter by Type</option>
+              <option hidden={true} value="">
+                Filter
+              </option>
               {filters.map((filter, index) => (
                 <option key={index} value={filter.url}>
                   {filter.name}
@@ -114,7 +121,7 @@ const Pokemons = () => {
 
           <button
             type="submit"
-            className="w-full p-2 bg-blue-500 text-white rounded mb-2"
+            className="w-full p-2 border-2 rounded-full mb-2 hover:bg-emerald-100"
           >
             Search
           </button>
@@ -127,27 +134,54 @@ const Pokemons = () => {
               <Cards key={index} data={pokemon} />
             ))
           : pokemons.map((pokemon, index) => (
-              <Link key={index} to={`/${pokemon.id}`}>
-                <div>
-                  {pokemon.id ? (
-                    <img
-                      src={`https://unpkg.com/pokeapi-sprites@2.0.2/sprites/pokemon/other/dream-world/${pokemon.id}.svg`}
-                      alt=""
-                      className="mx-auto"
-                    />
-                  ) : null}
-                  <p className="text-center text-lg font-bold">{pokemon.id}</p>
-                  <p className="text-center">{pokemon.name}</p>
-                  {pokemon.types ? (
-                    <div className="flex justify-center">
-                      {pokemon.types.map((type, index) => (
-                        <p key={index} className="mr-2 p-2 bg-gray-200 rounded">
-                          {type.type.name}
+              <Link
+                key={index}
+                to={`/${pokemon.id}`}
+                className={`p-4 rounded shadow-md ${
+                  pokemon.types ? typeColors[pokemon.types[0].type.name][0] : ""
+                } h-full grid grid-cols-2 hover:scale-105 hover:shadow-lg`}
+              >
+                {pokemon ? (
+                  <>
+                    <div className="flex-grow">
+                      <div className="w-full">
+                        <p className="text-center text-3xl font-bold text-white">
+                          #{pokemon.id}
                         </p>
-                      ))}
+                        <p className="text-center font-bold text-white">
+                          {pokemon.name
+                            ? capitalizeFirstLetter(pokemon.name)
+                            : null}
+                        </p>
+                        {pokemon.types ? (
+                          <div className="flex justify-center">
+                            {pokemon.types.map((type, index) => (
+                              <p
+                                key={index}
+                                className={`m-2 p-1 rounded text-white ${
+                                  pokemon.types
+                                    ? typeColors[pokemon.types[0].type.name][1]
+                                    : ""
+                                }`}
+                              >
+                                {capitalizeFirstLetter(type.type.name)}
+                              </p>
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
                     </div>
-                  ) : null}
-                </div>
+                    <div className="flex items-center justify-center">
+                      {pokemon.id ? (
+                        <img
+                          src={`https://unpkg.com/pokeapi-sprites@2.0.2/sprites/pokemon/other/dream-world/${pokemon.id}.svg`}
+                          alt=""
+                          className="mx-auto object-cover h-36 w-38"
+                        />
+                      ) : null}
+                    </div>
+                  </>
+                ) : null}
               </Link>
             ))}
       </ul>

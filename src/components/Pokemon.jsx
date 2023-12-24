@@ -22,23 +22,33 @@ const Pokemon = () => {
     if (id) fetchPokemon();
   }, [id]);
 
+  const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
   return (
-    <div className="container mx-auto p-4 flex flex-col md:flex-row items-center">
+    <div className="container mx-auto p-4 flex flex-col md:flex-row items-center bg-slate-200 h-screen">
       {pokemon ? (
         <>
           <img
             src={`https://unpkg.com/pokeapi-sprites@2.0.2/sprites/pokemon/other/dream-world/${id}.svg`}
             alt=""
-            className="mx-auto mb-4 md:mb-0 w-full md:w-1/2"
+            className="mx-auto mb-4 md:mb-0 w-full md:w-1/3"
           />
           <div className="flex-grow text-center md:text-left">
-            <p className="text-2xl font-bold mb-2">
-              {pokemon.id}. {pokemon.name}
+            <p className="text-6xl font-bold mb-8">
+              {pokemon.id}.{" "}
+              {pokemon.name ? capitalizeFirstLetter(pokemon.name) : null}
             </p>
             {pokemon.stats
               ? pokemon.stats.map((stat, index) => (
                   <div key={index} className="flex items-center mb-2">
-                    <p className="w-1/3">{stat.stat.name}:</p>
+                    <p className="w-1/3">
+                      {stat.stat.name
+                        ? capitalizeFirstLetter(stat.stat.name)
+                        : null}
+                      :
+                    </p>
                     <div className="h-4 text-xs leading-none py-1 text-center w-1/6">
                       {stat.base_stat}
                     </div>
