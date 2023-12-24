@@ -117,8 +117,8 @@ const Pokemons = () => {
   };
 
   return (
-    <div style={{ backgroundColor, color: textColor }}>
-      <button onClick={toggleTheme}>
+    <div style={{ backgroundColor, color: textColor }} className="text-center">
+      <button onClick={toggleTheme} className="float-left">
         <img
           src={theme === "light" ? "/dark.png" : "/light.png"}
           alt=""
@@ -126,6 +126,7 @@ const Pokemons = () => {
           height={"50px"}
         />
       </button>
+      <h1 className="text-4xl font-bold mb-4">Pokedex</h1>
       <div className="flex flex-col items-center">
         <form onSubmit={handleSearch} className="text-center mt-2">
           <div className="w-full">

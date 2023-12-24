@@ -47,7 +47,7 @@ const Cards = (props) => {
       to={`/${pokemon.id}`}
       className={`p-4 rounded shadow-md ${
         pokemon.types ? typeColors[pokemon.types[0].type.name][0] : ""
-      } m-2 h-full grid grid-cols-2 hover:scale-105 hover:shadow-lg`}
+      } m-2 h-full grid grid-cols-2 transition-transform transform hover:scale-105 hover:shadow-lg`}
     >
       {pokemon ? (
         <>
@@ -82,7 +82,7 @@ const Cards = (props) => {
               <img
                 src={`https://unpkg.com/pokeapi-sprites@2.0.2/sprites/pokemon/other/dream-world/${pokemon.id}.svg`}
                 alt=""
-                className="mx-auto object-cover h-36 w-38"
+                className="mx-auto object-cover h-36 w-38 transition-transform transform hover:scale-150"
               />
             ) : null}
           </div>

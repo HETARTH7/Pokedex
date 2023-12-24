@@ -1,11 +1,13 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAppContext } from "../context/AppContext";
 
 const Pokemon = () => {
   const { id } = useParams();
   const [pokemon, setPokemon] = useState([]);
+
+  const navigate = useNavigate();
 
   const { theme, toggleTheme } = useAppContext();
   const { backgroundColor, textColor } = useAppContext().getThemeColors();
@@ -32,6 +34,26 @@ const Pokemon = () => {
 
   return (
     <div style={{ backgroundColor, color: textColor }}>
+      <div className="flex justify-between pt-4">
+        <button
+          onClick={() => navigate(`/${Math.max(1, parseInt(id) - 1)}`)}
+          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+        >
+          {"< Previous"}
+        </button>
+        <button
+          onClick={() => navigate("/")}
+          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-700"
+        >
+          Home
+        </button>
+        <button
+          onClick={() => navigate(`/${Math.min(1302, parseInt(id) + 1)}`)}
+          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+        >
+          {"Next >"}
+        </button>
+      </div>
       <button onClick={toggleTheme} className="m-2">
         <img
           src={theme === "light" ? "/dark.png" : "/light.png"}
